@@ -1,0 +1,142 @@
+---
+# --- kubectl Installation ---
+- name: Install kubectl
+  gather_facts: true
+    - name: Add Kubernetes APT GPG key (Debian/Ubuntu)
+      ansible.builtin.get_url:
+        url: https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key # Check for latest stable version key if needed
+        dest: /etc/apt/keyrings/kubernetes-apt-keyring.asc
+        mode: '0644'
+        force: true
+      when: ansible_os_family == "Debian"
+
+    - name: Add Kubernetes APT repository (Debian/Ubuntu)
+      ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.asc] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /" # Check for latest stable version
+        state: present
+        filename: kubernetes
+      when: ansible_os_family == "Debian"
+
+    - name: Install kubectl (Debian/Ubuntu)
+      ansible.builtin.apt:
+        name: kubectl
+        state: present
+        update_cache: true
+      when: ansible_os_family == "Debian"
+
+    - name: Add Kubernetes YUM/DNF repository (RHEL family)
+      ansible.builtin.yum_repository:
+        name: kubernetes
+        description: Kubernetes
+        baseurl: https://pkgs.k8s.io/core:/stable:/v1.30/rpm/ # Check for latest stable version
+        gpgkey:
+          - https://pkgs.k8s.io/core:/stable:/v1.30/rpm/repodata/repomd.xml.key
+        gpgcheck: true
+        enabled: true
+        module_hotfixes: true # For RHEL 8+ to handle modularity, if applicable
+        # For older RHEL/CentOS that might not have dnf and rely on yum which doesn't understand module_hotfixes
+        # You might need to adjust or have separate tasks if targeting very old RHEL versions.
+      when: ansible_os_family == "RedHat"
+
+    - name: Install kubectl (RHEL family)
+      ansible.builtin.dnf: # Use dnf for modern RHEL family (Fedora, CentOS 8+, RHEL 8+)
+        name: kubectl
+        state: present
+        disable_excludes: kubernetes # In case kubectl was excluded elsewhere
+      when: ansible_os_family == "RedHat" and ansible_pkg_mgr == "dnf"
+
+    - name: Install kubectl (Older RHEL family using YUM)
+      ansible.builtin.yum:
+        name: kubectl
+        state: present
+        disable_excludes: kubernetes # In case kubectl was excluded elsewhere
+      when: ansible_os_family == "RedHat" and ansible_pkg_mgr == "yum"
+
+# --- Helm Installation ---
+- name: Install Helm
+  gather_facts: true
+  tasks:
+    - name: Check if Helm is already installed
+      ansible.builtin.command: helm version
+      register: helm_check
+      changed_when: false
+      ignore_errors: true
+
+    - name: Download Helm installation script
+      ansible.builtin.get_url:
+        url: https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+        dest: /tmp/get_helm.sh
+        mode: '0755'
+      when: helm_check.rc != 0 # Only download if Helm is not found
+
+    - name: Install Helm using the script
+      ansible.builtin.command: /tmp/get_helm.sh
+      args:
+        creates: /usr/local/bin/helm # Avoids re-running if helm binary exists
+      when: helm_check.rc != 0 # Only run if Helm is not found
+
+    - name: Clean up Helm installation script
+      ansible.builtin.file:
+        path: /tmp/get_helm.sh
+        state: absent
+      when: helm_check.rc != 0 # Only clean up if script was downloaded
+# --- Copy kubeconfig ---
+- name: Distribute kubeconfig from a server node to user nodes
+  hosts: localhost # This play orchestrates from the Ansible control node
+  gather_facts: false
+  pre_tasks:
+    - name: Check if 'server' group is defined and not empty
+      ansible.builtin.assert:
+        that:
+          - groups['server'] is defined
+          - groups['server'] | length > 0
+        fail_msg: "The 'server' inventory group must be defined and contain at least one host."
+      run_once: true # Only needs to run once for the play
+
+    - name: Ensure temporary directory exists on controller
+      ansible.builtin.file:
+        path: "{{ controller_temp_kubeconfig_dir }}"
+        state: directory
+        mode: '0700'
+      # This task runs on localhost (the controller)
+
+  tasks:
+    - name: "Fetch .kube/config from {{ kubeconfig_source_host }}"
+      ansible.builtin.fetch:
+        src: "{{ source_kubeconfig_path }}"
+        dest: "{{ controller_temp_fetched_config_path }}"
+        flat: yes # Ensures the destination is just the file, not with the full remote path
+      delegate_to: "{{ kubeconfig_source_host }}"
+      become: false # Fetch typically runs as the remote user defined for the host
+
+    # The following tasks will operate on hosts in the 'user' group
+    # by using a loop and delegate_to.
+
+    - name: "Ensure .kube directory exists on user node: {{ item }}"
+      ansible.builtin.file:
+        path: "{{ dest_kube_dir }}"
+        state: directory
+        owner: "{{ remote_target_user }}"
+        group: "{{ remote_target_user }}" # Assuming group is same as user
+        mode: '0700' # Secure permissions for the directory
+      loop: "{{ groups['user'] }}"
+      delegate_to: "{{ item }}"
+      become: true # May need sudo to create dir/set owner in another user's home
+
+    - name: "Copy .kube/config to user node: {{ item }}"
+      ansible.builtin.copy:
+        src: "{{ controller_temp_fetched_config_path }}" # Path on the Ansible controller
+        dest: "{{ dest_kubeconfig_path }}" # Path on the destination user node
+        owner: "{{ remote_target_user }}"
+        group: "{{ remote_target_user }}" # Assuming group is same as user
+        mode: '0600' # Secure permissions for the kubeconfig file
+      loop: "{{ groups['user'] }}"
+      delegate_to: "{{ item }}"
+      become: true # May need sudo to copy file/set owner/mode in another user's home
+
+  post_tasks:
+    - name: Clean up temporary directory on controller
+      ansible.builtin.file:
+        path: "{{ controller_temp_kubeconfig_dir }}"
+        state: absent
+      # This task runs on localhost (the controller)

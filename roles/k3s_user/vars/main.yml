@@ -1,0 +1,19 @@
+---
+# vars file for k3s-user
+kubeconfig_source_host: "{{ groups['server'][0] }}"
+
+# User and paths on the remote server (source) and user (destination) nodes.
+# Adjust if the username or home directory structure is different.
+remote_target_user: {{ ansible_user }} # The username on the target hosts in the 'user' group
+remote_source_user: {{ ansible_user }} # The username on the source host in the 'server' group (if different, adjust src path below)
+
+# Path to the .kube/config file on the source server node
+source_kubeconfig_path: "/home/{{ remote_source_user }}/.kube/config"
+
+# Destination directory and file path on the user nodes
+dest_kube_dir: "/home/{{ remote_target_user }}/.kube"
+dest_kubeconfig_path: "{{ dest_kube_dir }}/config"
+
+# Temporary storage on the Ansible control node
+controller_temp_kubeconfig_dir: "/tmp/ansible_kubeconfig_transfer_{{ ansible_date_time.epoch }}"
+controller_temp_fetched_config_path: "{{ controller_temp_kubeconfig_dir }}/config"
