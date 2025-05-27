@@ -1,0 +1,26 @@
+global
+    log 127.0.0.1 local0
+    chroot /var/lib/haproxy
+    pidfile /var/run/haproxy.pid
+    user haproxy
+    group haproxy
+    daemon
+
+defaults
+    mode tcp  # Kubernetes API server often uses TCP
+    log global
+    option tcplog
+    option dontlognull
+    timeout connect 5000
+    timeout client  50000
+    timeout server  50000
+
+frontend kube_apiserver
+    bind *:6443  # Standard Kubernetes API server port
+    default_backend kube_apiservers
+
+backend kube_apiservers
+    balance roundrobin
+    {% for host in groups['servers'] %}
+    server {{ hostvars[host]['inventory_hostname'] }} {{ hostvars[host]['ansible_host'] }}:6443 check
+    {% endfor %}

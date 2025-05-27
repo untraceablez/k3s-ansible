@@ -1,0 +1,12 @@
+---
+- name: restart haproxy
+  become: true
+  service:
+    name: haproxy
+    state: restarted
+
+- name: restart keepalived
+  become: true
+  service:
+    name: keepalived
+    state: restarted

@@ -1,0 +1,18 @@
+global_defs {
+    router_id {{ ansible_hostname }}  # Unique ID for this router
+}
+
+vrrp_instance VI_1 {
+    state {{ keepalived_state | default('BACKUP') }}  # Can be MASTER or BACKUP
+    interface eth0  # Adjust to your network interface on the Raspberry Pi
+    virtual_router_id 51  # Must be the same for all Keepalived nodes
+    priority {{ keepalived_priority | default(50) }} # Higher priority wins MASTER
+    advert_int 1
+    authentication {
+        auth_type PASS
+        auth_pass wK6xPd7fhlvojOYbcgC5sgRjYoWYi4qpyE5FdG3pIMJDu9ZzuOTR6V2OhZZSp2KD
+    }
+    virtual_ipaddress {
+        {{ floating_ip }}  # The floating IP address
+    }
+}

@@ -4,24 +4,25 @@
   gather_facts: true
   become: true
   roles:
-    - role: prereq
-    - role: airgap
-    - role: raspberrypi
+    - prereq
+    - airgap
+    - raspberrypi
 
 - name: Setup K3S server
   hosts: server
   become: true
   roles:
-    - role: k3s_server
+    - k3s_server
+    - haproxy
 
 - name: Setup K3S agent
   hosts: agent
   become: true
   roles:
-    - role: k3s_agent
+    - k3s_agent
 
-- name: Setup K3S User
-  hosts: user
-  become: true
-  roles:
-    - role: k3s_user
+#- name: Setup K3S User
+#  hosts: user
+#  become: true
+#  roles:
+#    - role: k3s_user
