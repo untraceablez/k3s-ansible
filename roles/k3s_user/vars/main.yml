@@ -4,8 +4,8 @@ kubeconfig_source_host: "{{ groups['server'][0] }}"
 
 # User and paths on the remote server (source) and user (destination) nodes.
 # Adjust if the username or home directory structure is different.
-remote_target_user: {{ ansible_user }} # The username on the target hosts in the 'user' group
-remote_source_user: {{ ansible_user }} # The username on the source host in the 'server' group (if different, adjust src path below)
+remote_target_user: "{{ ansible_user }}" # The username on the target hosts in the 'user' group
+remote_source_user: "{{ ansible_user }}" # The username on the source host in the 'server' group (if different, adjust src path below)
 
 # Path to the .kube/config file on the source server node
 source_kubeconfig_path: "/home/{{ remote_source_user }}/.kube/config"
