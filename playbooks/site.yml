@@ -19,3 +19,9 @@
   become: true
   roles:
     - role: k3s_agent
+
+- name: Setup K3S User
+  hosts: user
+  become: true
+  roles:
+    - role: k3s_user
