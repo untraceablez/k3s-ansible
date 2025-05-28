@@ -1,4 +1,0 @@
----
-floating_ip: 10.0.0.147
-keepalived_state: BACKUP
-keepalived_priority: 100
