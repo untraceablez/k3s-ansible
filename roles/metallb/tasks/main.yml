@@ -1,0 +1,25 @@
+---
+- name: Create the MetalLB namespace
+  kubernetes.core.k8s:
+    name: "{{ metallb_namespace }}"
+    api_version: v1
+    kind: Namespace
+    state: present
+  become: true
+
+- name: Apply the MetalLB manifest
+  kubernetes.core.k8s:
+    src: "{{ metallb_manifest_url }}"
+    namespace: "{{ metallb_namespace }}"
+  become: true
+
+- name: Create MetalLB IPAddressPool configuration
+  kubernetes.core.k8s:
+    api_version: metallb.io/v1beta1
+    kind: IPAddressPool
+    namespace: "{{ metallb_namespace }}"
+    name: first-pool
+    spec:
+      addresses: "{{ metallb_ip_ranges }}"
+  when: metallb_ip_ranges | length > 0
+  become: true

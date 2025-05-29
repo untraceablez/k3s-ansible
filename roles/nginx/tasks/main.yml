@@ -1,0 +1,39 @@
+---
+- name: Create the Nginx Deployment
+  kubernetes.core.k8s:
+    api_version: apps/v1
+    kind: Deployment
+    namespace: "{{ nginx_namespace }}"
+    name: "{{ nginx_deployment_name }}"
+    spec:
+      replicas: "{{ nginx_replicas }}"
+      selector:
+        matchLabels:
+          app: nginx
+      template:
+        metadata:
+          labels:
+            app: nginx
+        spec:
+          containers:
+            - name: nginx
+              image: "{{ nginx_image }}"
+              ports:
+                - containerPort: "{{ nginx_container_port }}"
+  become: true
+
+- name: Create the Nginx Service
+  kubernetes.core.k8s:
+    api_version: v1
+    kind: Service
+    namespace: "{{ nginx_namespace }}"
+    name: "{{ nginx_service_name }}"
+    spec:
+      selector:
+        app: nginx
+      ports:
+        - protocol: TCP
+          port: 80
+          targetPort: "{{ nginx_container_port }}"
+      type: "{{ service_type }}"
+  become: true

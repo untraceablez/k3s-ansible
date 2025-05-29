@@ -1,0 +1,4 @@
+---
+metallb_namespace: metallb-system
+metallb_manifest_url: https://raw.githubusercontent.com/metallb/metallb/v0.13.12/config/manifests/metallb-native.yaml # Or a specific version
+metallb_ip_ranges: ["10.1.0.140-10.1.0.149"] # List of IP address ranges for MetalLB to manage (e.g., ["192.168.1.200-192.168.1.210"])

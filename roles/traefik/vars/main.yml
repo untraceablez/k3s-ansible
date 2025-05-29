@@ -1,0 +1,7 @@
+---
+traefik_namespace: kube-system
+traefik_version: "27.1.1" # Specify the desired Traefik Helm chart version (example)
+traefik_release_name: traefik
+traefik_helm_repo_name: traefik
+traefik_helm_repo_url: https://helm.traefik.io/traefik
+traefik_values: {} # Dictionary for custom Helm values

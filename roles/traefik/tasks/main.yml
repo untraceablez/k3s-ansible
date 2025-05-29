@@ -1,0 +1,17 @@
+---
+- name: Add the Traefik Helm repository
+  kubernetes.core.helm_repository:
+    name: "{{ traefik_helm_repo_name }}"
+    repo_url: "{{ traefik_helm_repo_url }}"
+    state: present
+  become: true
+
+- name: Install/Upgrade Traefik
+  kubernetes.core.helm:
+    name: "{{ traefik_release_name }}"
+    namespace: "{{ traefik_namespace }}"
+    chart_ref: "{{ traefik_helm_repo_name }}/traefik"
+    chart_version: "{{ traefik_version }}"
+    values: "{{ traefik_values }}"
+    state: present
+  become: true

@@ -1,0 +1,5 @@
+---
+cilium_namespace: kube-system
+cilium_version: "1.16.0" # Specify the desired Cilium version
+cilium_release_name: cilium
+cilium_values: {} # Dictionary for custom Helm values
