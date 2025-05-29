@@ -9,6 +9,7 @@ k3s_version: v1.30.2+k3s1
 # Or you can omit it if not using Vagrant and let the first server automatically generate one.
 token: "FKHShWyTxFDrB6oeRSkyBnM1U9qGbI4RypcmMhM7f6OCWGdms4T9KJ5na5JyhLgN"
 api_endpoint: "{{ hostvars[groups['server'][0]]['ansible_host'] | default(groups['server'][0]) }}"
+load_balancer: metallb
 # Optional vars
 # extra_server_args: ""
 # extra_agent_args: ""
