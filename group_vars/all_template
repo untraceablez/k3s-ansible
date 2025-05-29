@@ -7,12 +7,9 @@ k3s_version: v1.30.2+k3s1
 # - pwgen -s 64 1
 # You can use ansible-vault to encrypt this value / keep it secret.
 # Or you can omit it if not using Vagrant and let the first server automatically generate one.
-token: "FKHShWyTxFDrB6oeRSkyBnM1U9qGbI4RypcmMhM7f6OCWGdms4T9KJ5na5JyhLgN"
+token: "yourcompletelytotallyrandomlygeneratedtokengoesrighthereyall"
 api_endpoint: "{{ hostvars[groups['server'][0]]['ansible_host'] | default(groups['server'][0]) }}"
 load_balancer: metallb
-metallb_namespace: metallb-system
-metallb_manifest_url: https://raw.githubusercontent.com/metallb/metallb/v0.13.12/config/manifests/metallb-native.yaml # Or a specific version
-metallb_ip_ranges: ["10.1.0.140-10.1.0.149"] # List of IP address ranges for MetalLB to manage (e.g., ["192.168.1.200-192.168.1.210"])
 # Optional vars
 # extra_server_args: ""
 # extra_agent_args: ""

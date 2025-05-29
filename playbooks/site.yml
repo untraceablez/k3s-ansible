@@ -13,7 +13,6 @@
   become: true
   roles:
     - k3s_server
-    - haproxy
 
 - name: Setup K3S agent
   hosts: agent
