@@ -1,2 +1,8 @@
 ---
 # defaults file for k3s-user
+source_kubeconfig_path: "/home/ansible/.kube/config"
+controller_temp_fetched_config_path: "/tmp/config"
+controller_temp_kubeconfig_dir: "/tmp"
+dest_kube_dir: "/home/{{remote_target_user}}/.kube"
+dest_kubeconfig_path: "/home/{{remote_target_user}}/.kube/config"
+kubeconfig_source_host: "{{ groups['servers'][0] if groups['servers'] is defined and groups['servers'] | length > 0 else omit }}"
