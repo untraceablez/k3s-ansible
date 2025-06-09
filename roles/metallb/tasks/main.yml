@@ -1,3 +1,4 @@
+# metallb/tasks/main.yml
 ---
 - name: Create the MetalLB namespace
   kubernetes.core.k8s:
@@ -5,15 +6,19 @@
     api_version: v1
     kind: Namespace
     state: present
-    kubeconfig: "{{ kubeconfig_path }}"
-  become: true
+    kubeconfig: "{{ kubeconfig_path }}" # Or use your variable: "{{ metallb_kubeconfig_path }}"
+  # Removed 'become: true' from earlier debugging (good!)
+  delegate_to: localhost # <--- ADD THIS LINE
+  run_once: true       # <--- ADD THIS LINE (Optional, but recommended for API calls)
 
 - name: Apply the MetalLB manifest
   kubernetes.core.k8s:
     src: "{{ metallb_manifest_url }}"
     namespace: "{{ metallb_namespace }}"
-    kubeconfig: "{{ kubeconfig_path }}"
-  become: true
+    kubeconfig: "{{ kubeconfig_path }}" # Or use your variable
+  # NO become: true
+  delegate_to: localhost # <--- ADD THIS LINE
+  run_once: true       # <--- ADD THIS LINE
 
 - name: Create MetalLB IPAddressPool configuration
   kubernetes.core.k8s:
@@ -23,6 +28,8 @@
     name: first-pool
     spec:
       addresses: "{{ metallb_ip_ranges }}"
-    kubeconfig: "{{ kubeconfig_path }}"
+    kubeconfig: "{{ kubeconfig_path }}" # Or use your variable
   when: metallb_ip_ranges | length > 0
-  become: true
+  # NO become: true
+  delegate_to: localhost # <--- ADD THIS LINE
+  run_once: true       # <--- ADD THIS LINE
