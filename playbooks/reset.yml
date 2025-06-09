@@ -40,3 +40,13 @@
         path: "~{{ ansible_user }}/.bashrc"
         search_string: "Added by k3s-ansible"
         state: absent
+
+- name: Uninstall the python3-kubernetes package
+  hosts: k3s_cluster
+  become: true
+  tasks:
+    - name: Remove python3-kubernetes package
+      apt:
+        name: python3-kubernetes
+        state: absent
+      ignore_errors: yes

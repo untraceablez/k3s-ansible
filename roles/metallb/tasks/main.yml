@@ -5,12 +5,14 @@
     api_version: v1
     kind: Namespace
     state: present
+    kubeconfig: "{{ kubeconfig_path }}"
   become: true
 
 - name: Apply the MetalLB manifest
   kubernetes.core.k8s:
     src: "{{ metallb_manifest_url }}"
     namespace: "{{ metallb_namespace }}"
+    kubeconfig: "{{ kubeconfig_path }}"
   become: true
 
 - name: Create MetalLB IPAddressPool configuration
@@ -21,5 +23,6 @@
     name: first-pool
     spec:
       addresses: "{{ metallb_ip_ranges }}"
+    kubeconfig: "{{ kubeconfig_path }}"
   when: metallb_ip_ranges | length > 0
   become: true

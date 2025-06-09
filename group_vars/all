@@ -36,3 +36,4 @@ metallb_ip_ranges: ["10.1.0.140-10.1.0.149"] # List of IP address ranges for Met
 #   Containerd can be configured to connect to private registries and use them to pull images as needed by the kubelet.
 #   YAML here will be placed as the content of /etc/rancher/k3s/registries.yaml
 #   See https://docs.k3s.io/installation/private-registry
+kubeconfig_path: ~/.kube/config
