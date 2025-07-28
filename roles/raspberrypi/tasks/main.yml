@@ -56,6 +56,7 @@
   package:
     name: python3-pip
     state: present
+    update_cache: yes
 
 - name: Update apt cache
   when: raspberry_pi == true
