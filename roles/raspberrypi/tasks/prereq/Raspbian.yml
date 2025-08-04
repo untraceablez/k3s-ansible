@@ -11,8 +11,9 @@
     replace: '\1 {{ cgroup_item }}'
   with_items:
     - "cgroup_enable=cpuset"
-    - "cgroup_memory=1"
     - "cgroup_enable=memory"
+    - "cgroup_memory=1"
+    
   loop_control:
     loop_var: cgroup_item
   notify: Reboot Pi

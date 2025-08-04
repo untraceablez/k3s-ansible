@@ -10,6 +10,8 @@
   # Removed 'become: true' from earlier debugging (good!)
   delegate_to: localhost # <--- ADD THIS LINE
   run_once: true       # <--- ADD THIS LINE (Optional, but recommended for API calls)
+  tags:
+    - metallb
 
 - name: Apply the MetalLB manifest
   kubernetes.core.k8s:
@@ -19,6 +21,8 @@
   # NO become: true
   delegate_to: localhost # <--- ADD THIS LINE
   run_once: true       # <--- ADD THIS LINE
+  tags:
+    - metallb
 
 - name: Create MetalLB IPAddressPool configuration
   kubernetes.core.k8s:
@@ -33,3 +37,5 @@
   # NO become: true
   delegate_to: localhost # <--- ADD THIS LINE
   run_once: true       # <--- ADD THIS LINE
+  tags:
+    - metallb
