@@ -20,15 +20,15 @@
   roles:
     - k3s_agent
 
-- name: Set up load balancer
-  become: true
-  hosts: k3s_cluster
-  roles:
-    - role: metallb
-      when: load_balancer == 'metallb'
-    - role: traefik
-      when: load_balancer == 'traefik'
-    - role: nginx
-      when: load_balancer == 'nginx'
-    - role: cillium
-      when: load_balancer == 'cillium'
+# - name: Set up load balancer
+#   become: true
+#   hosts: k3s_cluster
+#   roles:
+#     - role: metallb
+#       when: load_balancer == 'metallb'
+#     - role: traefik
+#       when: load_balancer == 'traefik'
+#     - role: nginx
+#       when: load_balancer == 'nginx'
+#     - role: cillium
+#       when: load_balancer == 'cillium'
