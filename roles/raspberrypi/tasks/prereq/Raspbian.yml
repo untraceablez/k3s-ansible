@@ -49,8 +49,5 @@
         path: /usr/sbin/ip6tables-legacy
         name: ip6tables
       register: ip6_legacy
+  notify: Reboot Pi
 
-- name: Reboot Pi
-  ansible.builtin.reboot:
-    msg: "Rebooting to apply kernel changes"
-    reboot_timeout: 300
