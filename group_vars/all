@@ -1,5 +1,5 @@
 ansible_port: 22
-ansible_user: rpi-admin
+ansible_user: pi
 k3s_version: v1.30.2+k3s1
 # The token should be a random string of reasonable length. You can generate
 # one with the following commands:
