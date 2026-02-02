@@ -52,19 +52,19 @@
     - raspberry_pi|default(false)
 
 - name: Install python3-pip if not present
-  when: raspberry_pi == true
+  when: raspberry_pi|default(false)
   package:
     name: python3-pip
     state: present
     update_cache: yes
 
 - name: Update apt cache
-  when: raspberry_pi == true
+  when: raspberry_pi|default(false)
   apt:
     update_cache: yes
 
 - name: Install python3-kubernetes package
-  when: raspberry_pi == true
+  when: raspberry_pi|default(false)
   apt:
     name: python3-kubernetes
     state: present

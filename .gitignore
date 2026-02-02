@@ -5,3 +5,4 @@ venv
 inventory.yml
 playbook/debug.yml
 host_vars/*
+ansible.cfg

@@ -40,6 +40,8 @@
     path: "~{{ ansible_user }}/.bashrc"
     regexp: '\.\s+<\(k3s completion bash\)'
     line: ". <(k3s completion bash)  # Added by k3s-ansible"
+    create: yes
+    mode: "0644"
 
 - name: Setup optional config file
   when: server_config_yaml is defined
