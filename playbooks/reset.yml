@@ -2,6 +2,7 @@
 - name: Undo cluster setup
   hosts: k3s_cluster
   become: true
+  serial: 1
   tasks:
     - name: Run K3s Uninstall script [server]
       when: "'server' in group_names"
@@ -34,6 +35,7 @@
 
 - name: Undo user setup
   hosts: server
+  serial: 1
   tasks:
     - name: Remove K3s commands from ~/.bashrc
       ansible.builtin.lineinfile:
@@ -44,6 +46,7 @@
 - name: Uninstall the python3-kubernetes package
   hosts: k3s_cluster
   become: true
+  serial: 1
   tasks:
     - name: Remove python3-kubernetes package
       apt:
