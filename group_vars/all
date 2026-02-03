@@ -1,6 +1,6 @@
 ansible_port: 22
 ansible_user: k3s_admin
-k3s_version: v1.30.2+k3s1
+k3s_version: v1.35.0+k3s1
 # The token should be a random string of reasonable length. You can generate
 # one with the following commands:
 # - openssl rand -base64 64
@@ -11,7 +11,7 @@ token: "FKHShWyTxFDrB6oeRSkyBnM1U9qGbI4RypcmMhM7f6OCWGdms4T9KJ5na5JyhLgN"
 api_endpoint: "{{ hostvars[groups['server'][0]]['ansible_host'] | default(groups['server'][0]) }}"
 load_balancer: metallb
 metallb_namespace: metallb-system
-metallb_manifest_url: https://raw.githubusercontent.com/metallb/metallb/v0.13.12/config/manifests/metallb-native.yaml # Or a specific version
+metallb_manifest_url: https://raw.githubusercontent.com/metallb/metallb/refs/heads/main/config/manifests/metallb-native-prometheus.yaml # Or a specific version
 metallb_ip_ranges: ["10.1.0.140-10.1.0.149"] # List of IP address ranges for MetalLB to manage (e.g., ["192.168.1.200-192.168.1.210"])
 # Optional vars
 # extra_server_args: ""
